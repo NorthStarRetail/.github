@@ -1,0 +1,892 @@
+{
+  "info": {
+    "name": "NorthStar Retail Platform",
+    "description": "All API endpoints via Gateway. Use environment for base_url and tokens.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8181" },
+    { "key": "admin_token", "value": "" },
+    { "key": "user_token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Guests",
+          "item": [
+            {
+              "name": "Register User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const body = pm.response.json();",
+                      "    if (body.id) pm.environment.set('user_id', body.id);",
+                      "    if (body.uid) pm.environment.set('user_uid', body.uid);",
+                      "    if (body.username) pm.environment.set('username', body.username);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"User\",\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+                },
+                "url": "{{base_url}}/api/auth/v1/guests/user"
+              }
+            },
+            {
+              "name": "Register Admin",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const body = pm.response.json();",
+                      "    if (body.id) pm.environment.set('user_id', body.id);",
+                      "    if (body.uid) pm.environment.set('user_uid', body.uid);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstname\": \"Admin\",\n  \"lastname\": \"User\",\n  \"username\": \"admin@northstar.com\",\n  \"password\": \"AdminPass123!\"\n}"
+                },
+                "url": "{{base_url}}/api/auth/v1/guests/admin"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Token",
+          "item": [
+            {
+              "name": "Login (Admin)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const body = pm.response.json();",
+                      "    const token = body.access_token;",
+                      "    if (token) pm.environment.set('admin_token', token);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    { "key": "grant_type", "value": "password" },
+                    { "key": "username", "value": "{{admin_username}}" },
+                    { "key": "password", "value": "{{admin_password}}" },
+                    { "key": "scope", "value": "openid" }
+                  ]
+                },
+                "url": "{{base_url}}/api/auth/oauth2/token",
+                "description": "Login as admin. Saves admin_token. Use for Auth, Book, Store, Inventory and all services."
+              }
+            },
+            {
+              "name": "Login (User)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const body = pm.response.json();",
+                      "    const token = body.access_token;",
+                      "    if (token) pm.environment.set('user_token', token);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    { "key": "grant_type", "value": "password" },
+                    { "key": "username", "value": "{{username}}" },
+                    { "key": "password", "value": "{{password}}" },
+                    { "key": "scope", "value": "openid" }
+                  ]
+                },
+                "url": "{{base_url}}/api/auth/oauth2/token",
+                "description": "Login as user. Saves user_token. Use for Order, User (details/ping), Notification."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Users",
+          "item": [
+            {
+              "name": "Get Users",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+                "url": "{{base_url}}/api/auth/v1/users?page=0&size=10"
+              }
+            },
+            {
+              "name": "Get User Details (current)",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+                "url": "{{base_url}}/api/auth/v1/users/details"
+              }
+            },
+            {
+              "name": "Get User by ID",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+                "url": "{{base_url}}/api/auth/v1/users/{{user_uid}}"
+              }
+            },
+            {
+              "name": "Ping",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+                "url": "{{base_url}}/api/auth/v1/users/ping"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Book",
+      "item": [
+        {
+          "name": "Create Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    if (body.id) pm.environment.set('book_id', body.id);",
+                  "    if (body.uid) pm.environment.set('book_uid', body.uid);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sample Book\",\n  \"isbn\": \"978-0-00-000000-0\",\n  \"author\": \"Author Name\",\n  \"price\": 19.99,\n  \"status\": \"AVAILABLE\"\n}"
+            },
+            "url": "{{base_url}}/api/book/v1/books"
+          }
+        },
+        {
+          "name": "Create Books (Bulk)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\"title\": \"To Kill a Mockingbird\", \"isbn\": \"978-0-06-112008-4\", \"author\": \"Harper Lee\", \"price\": 14.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"1984\", \"isbn\": \"978-0-452-28423-4\", \"author\": \"George Orwell\", \"price\": 13.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Great Gatsby\", \"isbn\": \"978-0-7432-7356-5\", \"author\": \"F. Scott Fitzgerald\", \"price\": 15.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Pride and Prejudice\", \"isbn\": \"978-0-14-143951-8\", \"author\": \"Jane Austen\", \"price\": 9.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Catcher in the Rye\", \"isbn\": \"978-0-316-76948-0\", \"author\": \"J.D. Salinger\", \"price\": 14.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Harry Potter and the Philosopher's Stone\", \"isbn\": \"978-0-7475-3269-9\", \"author\": \"J.K. Rowling\", \"price\": 12.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Lord of the Rings\", \"isbn\": \"978-0-544-01167-7\", \"author\": \"J.R.R. Tolkien\", \"price\": 18.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Jane Eyre\", \"isbn\": \"978-0-14-144114-6\", \"author\": \"Charlotte Brontë\", \"price\": 11.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Wuthering Heights\", \"isbn\": \"978-0-14-143955-6\", \"author\": \"Emily Brontë\", \"price\": 10.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Hobbit\", \"isbn\": \"978-0-544-01168-4\", \"author\": \"J.R.R. Tolkien\", \"price\": 14.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Brave New World\", \"isbn\": \"978-0-06-085052-4\", \"author\": \"Aldous Huxley\", \"price\": 13.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Chronicles of Narnia\", \"isbn\": \"978-0-06-623850-0\", \"author\": \"C.S. Lewis\", \"price\": 16.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Animal Farm\", \"isbn\": \"978-0-452-28424-1\", \"author\": \"George Orwell\", \"price\": 12.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Fahrenheit 451\", \"isbn\": \"978-0-7432-4722-1\", \"author\": \"Ray Bradbury\", \"price\": 14.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Alchemist\", \"isbn\": \"978-0-06-231500-7\", \"author\": \"Paulo Coelho\", \"price\": 15.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"One Hundred Years of Solitude\", \"isbn\": \"978-0-06-088328-7\", \"author\": \"Gabriel García Márquez\", \"price\": 16.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Kite Runner\", \"isbn\": \"978-1-59448-000-3\", \"author\": \"Khaled Hosseini\", \"price\": 15.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Da Vinci Code\", \"isbn\": \"978-0-385-50420-5\", \"author\": \"Dan Brown\", \"price\": 17.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Hitchhiker's Guide to the Galaxy\", \"isbn\": \"978-0-330-25864-9\", \"author\": \"Douglas Adams\", \"price\": 13.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Slaughterhouse-Five\", \"isbn\": \"978-0-385-31208-0\", \"author\": \"Kurt Vonnegut\", \"price\": 14.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Book Thief\", \"isbn\": \"978-0-375-83100-3\", \"author\": \"Markus Zusak\", \"price\": 14.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Gone Girl\", \"isbn\": \"978-0-307-58836-4\", \"author\": \"Gillian Flynn\", \"price\": 16.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Girl on the Train\", \"isbn\": \"978-1-59463-366-9\", \"author\": \"Paula Hawkins\", \"price\": 15.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Educated\", \"isbn\": \"978-0-399-59050-4\", \"author\": \"Tara Westover\", \"price\": 17.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Where the Crawdads Sing\", \"isbn\": \"978-0-7352-1909-0\", \"author\": \"Delia Owens\", \"price\": 18.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Little Women\", \"isbn\": \"978-0-14-751401-1\", \"author\": \"Louisa May Alcott\", \"price\": 10.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Picture of Dorian Gray\", \"isbn\": \"978-0-14-144246-4\", \"author\": \"Oscar Wilde\", \"price\": 11.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Frankenstein\", \"isbn\": \"978-0-14-143947-1\", \"author\": \"Mary Shelley\", \"price\": 9.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Dracula\", \"isbn\": \"978-0-14-143984-6\", \"author\": \"Bram Stoker\", \"price\": 12.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Stranger\", \"isbn\": \"978-0-679-72020-1\", \"author\": \"Albert Camus\", \"price\": 13.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Beloved\", \"isbn\": \"978-1-4000-3341-6\", \"author\": \"Toni Morrison\", \"price\": 15.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Handmaid's Tale\", \"isbn\": \"978-0-385-49087-9\", \"author\": \"Margaret Atwood\", \"price\": 16.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Dune\", \"isbn\": \"978-0-441-17271-9\", \"author\": \"Frank Herbert\", \"price\": 17.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Martian\", \"isbn\": \"978-0-8041-3902-1\", \"author\": \"Andy Weir\", \"price\": 15.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Project Hail Mary\", \"isbn\": \"978-0-593-09729-7\", \"author\": \"Andy Weir\", \"price\": 18.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Silent Patient\", \"isbn\": \"978-1-250-30169-7\", \"author\": \"Alex Michaelides\", \"price\": 16.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Atomic Habits\", \"isbn\": \"978-0-7352-1129-2\", \"author\": \"James Clear\", \"price\": 27.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Thinking, Fast and Slow\", \"isbn\": \"978-0-374-27563-1\", \"author\": \"Daniel Kahneman\", \"price\": 19.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Sapiens\", \"isbn\": \"978-0-06-231609-7\", \"author\": \"Yuval Noah Harari\", \"price\": 22.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"The Lean Startup\", \"isbn\": \"978-0-307-88791-7\", \"author\": \"Eric Ries\", \"price\": 24.99, \"status\": \"AVAILABLE\"},\n  {\"title\": \"Clean Code\", \"isbn\": \"978-0-13-235088-4\", \"author\": \"Robert C. Martin\", \"price\": 49.99, \"status\": \"AVAILABLE\"}\n]"
+            },
+            "url": "{{base_url}}/api/book/v1/books/bulk"
+          }
+        },
+        {
+          "name": "Update Book",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sample Book Updated\",\n  \"isbn\": \"978-0-00-000000-0\",\n  \"author\": \"Author Name\",\n  \"price\": 24.99,\n  \"status\": \"AVAILABLE\"\n}"
+            },
+            "url": "{{base_url}}/api/book/v1/books/{{book_uid}}"
+          }
+        },
+        {
+          "name": "Get Book by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/book/v1/books/{{book_uid}}"
+          }
+        },
+        {
+          "name": "Get All Books",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/book/v1/books?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get Books by Title",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/book/v1/books/title/Sample?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get Books by Author",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/book/v1/books/author/Author?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get Books by Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/book/v1/books/status/AVAILABLE?page=0&size=10"
+          }
+        },
+        {
+          "name": "Delete Book",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/book/v1/books/{{book_uid}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Store",
+      "item": [
+        {
+          "name": "Create Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    if (body.id) pm.environment.set('store_id', body.id);",
+                  "    if (body.uid) pm.environment.set('store_uid', body.uid);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Main Store\",\n  \"address\": \"123 Main St\",\n  \"region\": \"North\"\n}"
+            },
+            "url": "{{base_url}}/api/store/v1/stores"
+          }
+        },
+        {
+          "name": "Update Store",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Main Store Updated\",\n  \"address\": \"123 Main St\",\n  \"region\": \"North\"\n}"
+            },
+            "url": "{{base_url}}/api/store/v1/stores/{{store_uid}}"
+          }
+        },
+        {
+          "name": "Get Store by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/store/v1/stores/{{store_uid}}"
+          }
+        },
+        {
+          "name": "Get All Stores",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/store/v1/stores?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get Stores by Name",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/store/v1/stores/name/Main?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get Stores by Region",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/store/v1/stores/region/North?page=0&size=10"
+          }
+        },
+        {
+          "name": "Delete Store",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/store/v1/stores/{{store_uid}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inventory",
+      "item": [
+        {
+          "name": "Create or Update Inventory",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    if (body.uid) pm.environment.set('inventory_uid', body.uid);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": \"{{store_uid}}\",\n  \"bookId\": \"{{book_uid}}\",\n  \"quantity\": 50\n}"
+            },
+            "url": "{{base_url}}/api/inventory/v1/inventory"
+          }
+        },
+        {
+          "name": "Get Inventory by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/inventory/v1/inventory/{{inventory_uid}}"
+          }
+        },
+        {
+          "name": "Get Inventory by Store and Book",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/inventory/v1/inventory/store/{{store_uid}}/book/{{book_uid}}"
+          }
+        },
+        {
+          "name": "Get Inventory by Store",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/inventory/v1/inventory/store/{{store_uid}}?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get Inventory by Book",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/inventory/v1/inventory/book/{{book_uid}}?page=0&size=10"
+          }
+        },
+        {
+          "name": "Reserve",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": \"{{store_uid}}\",\n  \"bookId\": \"{{book_uid}}\",\n  \"quantity\": 2\n}"
+            },
+            "url": "{{base_url}}/api/inventory/v1/inventory/reserve"
+          }
+        },
+        {
+          "name": "Release",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": \"{{store_uid}}\",\n  \"bookId\": \"{{book_uid}}\",\n  \"quantity\": 2\n}"
+            },
+            "url": "{{base_url}}/api/inventory/v1/inventory/release"
+          }
+        },
+        {
+          "name": "Delete Inventory",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/inventory/v1/inventory/{{inventory_uid}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    if (body.uid) pm.environment.set('order_uid', body.uid);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": \"{{store_uid}}\",\n  \"lineItems\": [\n    { \"bookId\": \"{{book_uid}}\", \"quantity\": 2 }\n  ]\n}"
+            },
+            "url": "{{base_url}}/api/order/v1/orders"
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+            "url": "{{base_url}}/api/order/v1/orders/{{order_uid}}"
+          }
+        },
+        {
+          "name": "Get Orders by User",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+            "url": "{{base_url}}/api/order/v1/orders/user/{{user_uid}}?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get Orders by Store",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+            "url": "{{base_url}}/api/order/v1/orders/store/{{store_uid}}?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get Orders by Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+            "url": "{{base_url}}/api/order/v1/orders/status/PENDING?page=0&size=10"
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+            "url": "{{base_url}}/api/order/v1/orders/{{order_uid}}/status?status=CONFIRMED"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "item": [
+        {
+          "name": "Get Notification by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+            "url": "{{base_url}}/api/notification/v1/notifications/{{notification_uid}}"
+          }
+        },
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+            "url": "{{base_url}}/api/notification/v1/notifications?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get Notifications by User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    if (Array.isArray(body) && body[0] && body[0].uid) pm.environment.set('notification_uid', body[0].uid);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+            "url": "{{base_url}}/api/notification/v1/notifications/user/{{user_uid}}?page=0&size=10"
+          }
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+            "url": "{{base_url}}/api/notification/v1/notifications/{{notification_uid}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Flows",
+      "item": [
+        {
+          "name": "Complete Flow",
+          "item": [
+            {
+              "name": "1. Register Admin",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const body = pm.response.json();",
+                      "    if (body.uid) pm.environment.set('admin_uid', body.uid);",
+                      "    pm.environment.set('admin_username', 'admin@northstar.com');",
+                      "    pm.environment.set('admin_password', 'AdminPass123!');",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstname\": \"Admin\",\n  \"lastname\": \"User\",\n  \"username\": \"admin@northstar.com\",\n  \"password\": \"AdminPass123!\"\n}"
+                },
+                "url": "{{base_url}}/api/auth/v1/guests/admin"
+              }
+            },
+            {
+              "name": "2. Register User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const body = pm.response.json();",
+                      "    if (body.uid) pm.environment.set('user_uid', body.uid);",
+                      "    if (body.username) {",
+                      "        pm.environment.set('username', body.username);",
+                      "        pm.environment.set('password', 'UserPass123!');",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"User\",\n  \"username\": \"testuser@northstar.com\",\n  \"password\": \"UserPass123!\"\n}"
+                },
+                "url": "{{base_url}}/api/auth/v1/guests/user"
+              }
+            },
+            {
+              "name": "3. Login Admin",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const body = pm.response.json();",
+                      "    const token = body.access_token;",
+                      "    if (token) pm.environment.set('admin_token', token);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    { "key": "grant_type", "value": "password" },
+                    { "key": "username", "value": "{{admin_username}}" },
+                    { "key": "password", "value": "{{admin_password}}" },
+                    { "key": "scope", "value": "openid" }
+                  ]
+                },
+                "url": "{{base_url}}/api/auth/oauth2/token"
+              }
+            },
+            {
+              "name": "4. Login User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const body = pm.response.json();",
+                      "    const token = body.access_token;",
+                      "    if (token) pm.environment.set('user_token', token);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    { "key": "grant_type", "value": "password" },
+                    { "key": "username", "value": "{{username}}" },
+                    { "key": "password", "value": "{{password}}" },
+                    { "key": "scope", "value": "openid" }
+                  ]
+                },
+                "url": "{{base_url}}/api/auth/oauth2/token"
+              }
+            },
+            {
+              "name": "5. Create Book (Admin)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const body = pm.response.json();",
+                      "    if (body.uid) pm.environment.set('book_uid', body.uid);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Sample Book\",\n  \"isbn\": \"978-0-00-000000-0\",\n  \"author\": \"Author Name\",\n  \"price\": 19.99,\n  \"status\": \"AVAILABLE\"\n}"
+                },
+                "url": "{{base_url}}/api/book/v1/books"
+              }
+            },
+            {
+              "name": "6. Create Store (Admin)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const body = pm.response.json();",
+                      "    if (body.uid) pm.environment.set('store_uid', body.uid);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Main Store\",\n  \"address\": \"123 Main St\",\n  \"region\": \"North\"\n}"
+                },
+                "url": "{{base_url}}/api/store/v1/stores"
+              }
+            },
+            {
+              "name": "7. Create Inventory (Admin)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const body = pm.response.json();",
+                      "    if (body.uid) pm.environment.set('inventory_uid', body.uid);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"storeId\": \"{{store_uid}}\",\n  \"bookId\": \"{{book_uid}}\",\n  \"quantity\": 50\n}"
+                },
+                "url": "{{base_url}}/api/inventory/v1/inventory"
+              }
+            },
+            {
+              "name": "8. Create Order (User)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const body = pm.response.json();",
+                      "    if (body.uid) pm.environment.set('order_uid', body.uid);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{user_token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"storeId\": \"{{store_uid}}\",\n  \"lineItems\": [\n    { \"bookId\": \"{{book_uid}}\", \"quantity\": 2 }\n  ]\n}"
+                },
+                "url": "{{base_url}}/api/order/v1/orders"
+              }
+            },
+            {
+              "name": "9. Get Notifications by User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const body = pm.response.json();",
+                      "    if (Array.isArray(body) && body.length > 0) {",
+                      "        console.log('Notifications found:', body.length);",
+                      "        if (body[0] && body[0].uid) pm.environment.set('notification_uid', body[0].uid);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }],
+                "url": "{{base_url}}/api/notification/v1/notifications/user/{{user_uid}}?page=0&size=10"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
