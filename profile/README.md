@@ -284,3 +284,6 @@ Apply order: Discovery → Gateway DB + Gateway → Auth DB + Auth → then each
 - Controller → Service (interface) → ServiceImpl → Repository; DTOs, Mapper (MapStruct), GlobalExceptionHandler.
 - Pagination at repository level: `Pageable` in controller/service, `Page<>` in repository; no manual pagination in controller.
 - Same layering and naming as the clozingtag project for consistency.
+
+<img width="1000" height="1214" alt="Screenshot 2026-02-06 at 17 58 01" src="https://github.com/user-attachments/assets/8acbbaa7-e70f-4103-974e-377a5471ab8d" />
+
