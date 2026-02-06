@@ -275,7 +275,7 @@ Each service has a **k8s/** folder with Kubernetes manifests:
 - **Gateway**: ConfigMap + Secret + Deployment + Service (LoadBalancer) + Redis (ConfigMap + PVC + Deployment + Service).
 - **Auth, Book, Store, Order, Inventory, Notification**: ConfigMap + Deployment + Service + Postgres (ConfigMap + Secret + PVC + Deployment + Service).
 
-Apply order: Discovery → Gateway DB + Gateway → Auth DB + Auth → then each domain service’s DB then app. See [docs/DOCKER_K8S.md](specs/DOCKER_K8S.md) for exact commands and image/secret notes.
+Apply order: Discovery → Gateway DB + Gateway → Auth DB + Auth → then each domain service’s DB then app. See [docs/DOCKER_K8S.md](/DOCKER_K8S.md) for exact commands and image/secret notes.
 
 
 
