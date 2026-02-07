@@ -631,8 +631,6 @@
                       "if (pm.response.code === 201) {",
                       "    const body = pm.response.json();",
                       "    if (body.uid) pm.environment.set('admin_uid', body.uid);",
-                      "    pm.environment.set('admin_username', 'admin@northstar.com');",
-                      "    pm.environment.set('admin_password', 'AdminPass123!');",
                       "}"
                     ],
                     "type": "text/javascript"
@@ -644,7 +642,7 @@
                 "header": [{ "key": "Content-Type", "value": "application/json" }],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"firstname\": \"Admin\",\n  \"lastname\": \"User\",\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+                  "raw": "{\n  \"firstname\": \"{{admin_firstname}}\",\n  \"lastname\": \"{{admin_lastname}}\",\n  \"username\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password_flow}}\"\n}"
                 },
                 "url": "{{base_url}}/api/auth/v1/guests/admin"
               }
@@ -659,10 +657,7 @@
                       "if (pm.response.code === 201) {",
                       "    const body = pm.response.json();",
                       "    if (body.uid) pm.environment.set('user_uid', body.uid);",
-                      "    if (body.username) {",
-                      "        pm.environment.set('username', body.username);",
-                      "        pm.environment.set('password', 'UserPass123!');",
-                      "    }",
+                      "    if (body.username) pm.environment.set('username', body.username);",
                       "}"
                     ],
                     "type": "text/javascript"
@@ -674,7 +669,7 @@
                 "header": [{ "key": "Content-Type", "value": "application/json" }],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"User\",\n  \"username\": \"testuser@northstar.com\",\n  \"password\": \"UserPass123!\"\n}"
+                  "raw": "{\n  \"firstname\": \"{{user_firstname}}\",\n  \"lastname\": \"{{user_lastname}}\",\n  \"username\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}"
                 },
                 "url": "{{base_url}}/api/auth/v1/guests/user"
               }
@@ -703,8 +698,8 @@
                   "mode": "urlencoded",
                   "urlencoded": [
                     { "key": "grant_type", "value": "password" },
-                    { "key": "username", "value": "{{admin_username}}" },
-                    { "key": "password", "value": "{{admin_password}}" },
+                    { "key": "username", "value": "{{admin_email}}" },
+                    { "key": "password", "value": "{{admin_password_flow}}" },
                     { "key": "scope", "value": "openid" }
                   ]
                 },
@@ -735,8 +730,8 @@
                   "mode": "urlencoded",
                   "urlencoded": [
                     { "key": "grant_type", "value": "password" },
-                    { "key": "username", "value": "{{username}}" },
-                    { "key": "password", "value": "{{password}}" },
+                    { "key": "username", "value": "{{user_email}}" },
+                    { "key": "password", "value": "{{user_password}}" },
                     { "key": "scope", "value": "openid" }
                   ]
                 },
@@ -767,7 +762,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"title\": \"Sample Book\",\n  \"isbn\": \"978-0-00-000000-0\",\n  \"author\": \"Author Name\",\n  \"price\": 19.99,\n  \"status\": \"AVAILABLE\"\n}"
+                  "raw": "{\n  \"title\": \"{{book_title}}\",\n  \"isbn\": \"{{book_isbn}}\",\n  \"author\": \"{{book_author}}\",\n  \"price\": {{book_price}},\n  \"status\": \"AVAILABLE\"\n}"
                 },
                 "url": "{{base_url}}/api/book/v1/books"
               }
@@ -796,7 +791,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"Main Store\",\n  \"address\": \"123 Main St\",\n  \"region\": \"North\"\n}"
+                  "raw": "{\n  \"name\": \"{{store_name}}\",\n  \"address\": \"{{store_address}}\",\n  \"region\": \"{{store_region}}\"\n}"
                 },
                 "url": "{{base_url}}/api/store/v1/stores"
               }

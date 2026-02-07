@@ -1,6 +1,5 @@
-# NorthStar full stack: run from this directory with: docker compose up -d --build
-# --build builds the service images (discovery, gateway, auth, book, store, order, inventory, notification)
-# from each module's Dockerfile; no pre-built images required. Postgres and Redis use hub images.
+# NorthStar full stack (canonical). Run from repo root: docker compose -f .github/docker-compose.yml up -d --build
+# --build builds the service images from each module's Dockerfile. Postgres and Redis use hub images.
 
 services:
   discovery:
@@ -140,6 +139,7 @@ services:
       - "8191:8191"
     environment:
       DISCOVERY_SERVER_URL: http://discovery:8761/eureka/
+      EUREKA_INSTANCE_HOSTNAME: auth
       BASE_URL: http://gateway:8181
       DB_HOST: postgres-auth
       DB_PORT: "5432"
@@ -160,6 +160,7 @@ services:
       - "8186:8186"
     environment:
       DISCOVERY_SERVER_URL: http://discovery:8761/eureka/
+      EUREKA_INSTANCE_HOSTNAME: book
       BASE_URL: http://gateway:8181
       AUTH_SERVER_URL: http://gateway:8181/api/auth/oauth2/jwks
       DB_HOST: postgres-book
@@ -181,6 +182,7 @@ services:
       - "8187:8187"
     environment:
       DISCOVERY_SERVER_URL: http://discovery:8761/eureka/
+      EUREKA_INSTANCE_HOSTNAME: store
       BASE_URL: http://gateway:8181
       AUTH_SERVER_URL: http://gateway:8181/api/auth/oauth2/jwks
       DB_HOST: postgres-store
@@ -223,6 +225,7 @@ services:
       - "8189:8189"
     environment:
       DISCOVERY_SERVER_URL: http://discovery:8761/eureka/
+      EUREKA_INSTANCE_HOSTNAME: inventory
       BASE_URL: http://gateway:8181
       AUTH_SERVER_URL: http://gateway:8181/api/auth/oauth2/jwks
       DB_HOST: postgres-inventory
@@ -244,6 +247,7 @@ services:
       - "8190:8190"
     environment:
       DISCOVERY_SERVER_URL: http://discovery:8761/eureka/
+      EUREKA_INSTANCE_HOSTNAME: notification
       BASE_URL: http://gateway:8181
       AUTH_SERVER_URL: http://gateway:8181/api/auth/oauth2/jwks
       DB_HOST: postgres-notification
