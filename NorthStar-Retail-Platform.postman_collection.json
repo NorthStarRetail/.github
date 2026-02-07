@@ -66,7 +66,7 @@
                 "header": [{ "key": "Content-Type", "value": "application/json" }],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"firstname\": \"Admin\",\n  \"lastname\": \"User\",\n  \"username\": \"admin@northstar.com\",\n  \"password\": \"AdminPass123!\"\n}"
+                  "raw": "{\n  \"firstname\": \"Admin\",\n  \"lastname\": \"User\",\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\"\n}"
                 },
                 "url": "{{base_url}}/api/auth/v1/guests/admin"
               }
@@ -644,7 +644,7 @@
                 "header": [{ "key": "Content-Type", "value": "application/json" }],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"firstname\": \"Admin\",\n  \"lastname\": \"User\",\n  \"username\": \"admin@northstar.com\",\n  \"password\": \"AdminPass123!\"\n}"
+                  "raw": "{\n  \"firstname\": \"Admin\",\n  \"lastname\": \"User\",\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\"\n}"
                 },
                 "url": "{{base_url}}/api/auth/v1/guests/admin"
               }
